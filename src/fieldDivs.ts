@@ -1,4 +1,4 @@
-import { position } from "./interfaces";
+import { CopyField, Position } from "./interfaces";
 import htmlElements from "./data";
 import Generator from "./genrate";
 
@@ -8,9 +8,12 @@ export default class FieldDivElements {
   public x: number;
   public y: number;
   public clicked: boolean;
+  public backgroundPositionY: string = "";
+  public backgroundPositionX: string = "";
+  public backgroundImage: string = "";
   div: HTMLDivElement;
   parentDiv: HTMLDivElement;
-  constructor(posObj: position, parentDiv: HTMLDivElement) {
+  constructor(posObj: Position, parentDiv: HTMLDivElement) {
     this.x = posObj.x;
     this.y = posObj.y;
     this.clicked = false;
@@ -29,17 +32,22 @@ export default class FieldDivElements {
     this.div.addEventListener("mousedown", (e: MouseEvent) => {
       console.log(e.button);
       if (e.button === 0) {
-        if (!e.ctrlKey) {
+        if (!(e.ctrlKey || e.metaKey)) {
           for (const object of htmlElements.clickedField) {
             object.div.classList.remove("marked");
             object.clicked = false;
           }
           htmlElements.clickedField.length = 0;
           htmlElements.clickedField?.push(this);
-        } else if (e.ctrlKey && !this.clicked) {
+        } else if ((e.ctrlKey || e.metaKey) && !this.clicked) {
           extendStart = this;
         } else if (htmlElements.paste) {
-          console.log("Przerwanie wklejania");
+          // console.log("Przerwanie wklejania");
+          for (const object of htmlElements.tempField) {
+            object.backgroundPositionX = object.div.style.backgroundPositionX;
+            object.backgroundPositionY = object.div.style.backgroundPositionY;
+            object.backgroundImage = object.div.style.backgroundImage;
+          }
           htmlElements.paste = false;
         }
       }
@@ -50,20 +58,20 @@ export default class FieldDivElements {
       (e: MouseEvent) => {
         // console.log("nigger");
         if (e.button === 0) {
-          if (!e.ctrlKey) {
+          if (!(e.ctrlKey || e.metaKey)) {
             htmlElements.clickedField?.push(this);
             this.markField();
-          } else if (e.ctrlKey && this.clicked) {
+          } else if ((e.ctrlKey || e.metaKey) && this.clicked) {
             console.log(this);
             console.log("Usuwanie");
-            htmlElements.clickedField = htmlElements.clickedField.filter((element) => {
+            htmlElements.clickedField = htmlElements.clickedField.filter((element: FieldDivElements) => {
               console.log({ pos: element.position, x: this.x, y: this.y });
               return element.position.x !== this.x || element.position.y !== this.y;
             });
             this.div.classList.remove("marked");
             this.clicked = false;
             console.log(htmlElements.clickedField);
-          } else if (e.ctrlKey && !this.clicked) {
+          } else if ((e.ctrlKey || e.metaKey) && !this.clicked) {
             if (extendStart) {
               const arr: FieldDivElements[] = this.findArray(extendStart, this);
               for (const object of arr) {
@@ -113,11 +121,16 @@ export default class FieldDivElements {
 
               if (NewField) {
                 htmlElements.tempField.push(NewField);
-                NewField.div.style.backgroundImage = object.div.style.backgroundImage;
-                NewField.div.style.backgroundPositionX = object.div.style.backgroundPositionX;
-                NewField.div.style.backgroundPositionY = object.div.style.backgroundPositionY;
+                // if (object.backgroundImage == "") {
+                NewField.div.style.backgroundImage = object.backgroundImage;
+                // }
+
+                NewField.div.style.backgroundPositionX = object.backgroundPositionX;
+                NewField.div.style.backgroundPositionY = object.backgroundPositionY;
               }
             }
+            console.log("Nowe pola");
+
             console.log("Wklejanie");
           }
         } else {
@@ -132,8 +145,13 @@ export default class FieldDivElements {
         for (const object of htmlElements.tempField) {
           object.div.classList.remove("marked");
           object.clicked = false;
-
-          object.div.style.backgroundImage = "";
+          if (object.backgroundPositionY == "") {
+            object.div.style.backgroundImage = "";
+          } else {
+            object.div.style.backgroundPositionX = object.backgroundPositionX;
+            object.div.style.backgroundPositionY = object.backgroundPositionY;
+            object.div.style.backgroundImage = object.backgroundImage;
+          }
         }
       }
     });
@@ -159,6 +177,11 @@ export default class FieldDivElements {
     console.log("nigger");
     if (htmlElements.paste) {
       console.log("Przerwanie wklejania");
+      for (const object of htmlElements.tempField) {
+        object.backgroundPositionX = object.div.style.backgroundPositionX;
+        object.backgroundPositionY = object.div.style.backgroundPositionY;
+        object.backgroundImage = object.div.style.backgroundImage;
+      }
       htmlElements.paste = false;
       htmlElements.tempField.length = 0;
       htmlElements.clickedField.length = 0;
@@ -179,10 +202,12 @@ export default class FieldDivElements {
         htmlElements.clickedField[0].div.classList.add("marked");
         htmlElements.clickedField[0].clicked = true;
         console.log("Klikniętą ten sam");
+        console.log(htmlElements.clickedField[0]);
       }
     }
   }
-  public get position(): position {
+
+  public get position(): Position {
     return { x: this.x, y: this.y };
   }
 }

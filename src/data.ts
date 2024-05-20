@@ -1,12 +1,13 @@
-import FieldDivElements from "./fieldDivs";
-import { htmlElementContainer } from "./interfaces";
+// import FieldDivElements from "./fieldDivs";
+import { HtmlElementContainer } from "./interfaces";
 
-const htmlElements: htmlElementContainer = {
+const htmlElements: HtmlElementContainer = {
   fieldDiv: <HTMLDivElement>document.querySelector("#field"),
   itemsDiv: <HTMLDivElement>document.querySelector("#items"),
   clickedField: [],
   clickedItem: null,
   copied: [],
+  history: [[]],
   automat: <HTMLInputElement>document.querySelector("#automat"),
   paste: false,
   tempField: [],

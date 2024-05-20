@@ -2,9 +2,9 @@
 // htmlElements.itemsDiv.style.backgroundImage = 'url("./img/sprite2.png")';
 
 import htmlElements from "./data";
-import FieldDivElements from "./fieldDivs";
+// import FieldDivElements from "./fieldDivs";
 import Generator from "./genrate";
-import { position } from "./interfaces";
+import { CopyField } from "./interfaces";
 
 function init(): void {
   const resizableDiv: HTMLDivElement = <HTMLDivElement>document.querySelector("#resizableDiv");
@@ -46,14 +46,54 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
     console.log("Usuwanie");
     for (const object of htmlElements.clickedField) {
       object.div.style.backgroundImage = "";
+      object.backgroundImage = "";
+      object.backgroundPositionX = "";
+      object.backgroundPositionY = "";
       object.clicked = true;
       object.div.classList.add("marked");
     }
-  } else if (e.ctrlKey && e.code == "KeyC") {
+  } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyC") {
     console.log("Kopiowanie");
-    htmlElements.copied = [...htmlElements.clickedField];
+    htmlElements.copied.length = 0;
+    htmlElements.tempField.length = 0;
+    for (const object of htmlElements.clickedField) {
+      const copiedData: CopyField = {
+        x: object.x,
+        y: object.y,
+        backgroundPositionX: object.backgroundPositionX,
+        backgroundPositionY: object.backgroundPositionY,
+        backgroundImage: object.backgroundImage,
+      };
+      htmlElements.copied.push(copiedData);
+    }
     console.log(htmlElements.copied);
-  } else if (e.ctrlKey && e.code == "KeyV") {
+
+    // htmlElements.copied = [...htmlElements.clickedField];
+    console.log(htmlElements.copied);
+  } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyX") {
+    console.log("Wycinanie");
+    htmlElements.copied.length = 0;
+    htmlElements.tempField.length = 0;
+    for (const object of htmlElements.clickedField) {
+      const copiedData: CopyField = {
+        x: object.x,
+        y: object.y,
+        backgroundPositionX: object.backgroundPositionX,
+        backgroundPositionY: object.backgroundPositionY,
+        backgroundImage: object.backgroundImage,
+      };
+      htmlElements.copied.push(copiedData);
+      object.backgroundPositionX = "";
+      object.backgroundPositionY = "";
+      object.backgroundImage = "";
+      object.div.style.backgroundImage = "";
+      object.div.style.backgroundPositionX = "";
+    }
+    console.log(htmlElements.copied);
+
+    // htmlElements.copied = [...htmlElements.clickedField];
+    console.log(htmlElements.copied);
+  } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyV") {
     if (htmlElements.copied.length > 0) {
       htmlElements.paste = true;
     }

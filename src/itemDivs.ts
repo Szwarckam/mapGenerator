@@ -1,7 +1,7 @@
 import htmlElements from "./data";
 import FieldDivElements from "./fieldDivs";
 import Generator from "./genrate";
-import { position } from "./interfaces";
+import { Position } from "./interfaces";
 
 let farthestElement: FieldDivElements = htmlElements.clickedField[0];
 let newLine: boolean = false;
@@ -10,7 +10,7 @@ export default class ItemDivElements {
   private y: number;
   div: HTMLDivElement;
   parentDiv: HTMLDivElement;
-  constructor(posObj: position, parentDiv: HTMLDivElement) {
+  constructor(posObj: Position, parentDiv: HTMLDivElement) {
     this.x = posObj.x;
     this.y = posObj.y;
     this.parentDiv = parentDiv;
@@ -36,6 +36,9 @@ export default class ItemDivElements {
             object.div.style.backgroundImage = 'url("./src/img/sprite2.png")';
             object.div.style.backgroundPositionX = `-${this.x * 50}px`;
             object.div.style.backgroundPositionY = `-${this.y * 50}px`;
+            object.backgroundPositionX = `-${this.x * 50}px`;
+            object.backgroundPositionY = `-${this.y * 50}px`;
+            object.backgroundImage = object.div.style.backgroundImage;
             // console.log(object.div.style.backgroundImage);
           }
         }
@@ -117,12 +120,14 @@ export default class ItemDivElements {
           object.div.style.backgroundImage = 'url("./src/img/sprite2.png")';
           object.div.style.backgroundPositionX = `-${this.x * 50}px`;
           object.div.style.backgroundPositionY = `-${this.y * 50}px`;
+          object.backgroundPositionX = `-${this.y * 50}px`;
+          object.backgroundPositionY = `-${this.y * 50}px`;
           // console.log(object.div.style.backgroundImage);
         }
       }
     }
   }
-  public get position(): position {
+  public get position(): Position {
     return { x: this.x, y: this.y };
   }
 }

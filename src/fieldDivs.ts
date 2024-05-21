@@ -56,7 +56,7 @@ export default class FieldDivElements {
     this.div.addEventListener(
       "mouseup",
       (e: MouseEvent) => {
-        // console.log("nigger");
+
         if (e.button === 0) {
           if (!(e.ctrlKey || e.metaKey)) {
             htmlElements.clickedField?.push(this);
@@ -90,6 +90,8 @@ export default class FieldDivElements {
             console.log(htmlElements.clickedField);
           }
         }
+
+
       },
       true
     );
@@ -130,13 +132,11 @@ export default class FieldDivElements {
               }
             }
             console.log("Nowe pola");
-
+            //this.saveHisory()
             console.log("Wklejanie");
           }
         } else {
-          console.log("nigger");
         }
-        // console.log("nigger");
       },
       true
     );
@@ -174,7 +174,6 @@ export default class FieldDivElements {
     return arr;
   }
   private markField(): void {
-    console.log("nigger");
     if (htmlElements.paste) {
       console.log("Przerwanie wklejania");
       for (const object of htmlElements.tempField) {
@@ -182,9 +181,11 @@ export default class FieldDivElements {
         object.backgroundPositionY = object.div.style.backgroundPositionY;
         object.backgroundImage = object.div.style.backgroundImage;
       }
+      this.saveHisory(htmlElements.tempField)
       htmlElements.paste = false;
       htmlElements.tempField.length = 0;
       htmlElements.clickedField.length = 0;
+
     } else {
       if (
         htmlElements.clickedField[0].position.x !== htmlElements.clickedField[1].position.x ||
@@ -204,6 +205,29 @@ export default class FieldDivElements {
         console.log("Klikniętą ten sam");
         console.log(htmlElements.clickedField[0]);
       }
+      // this.saveHisory()
+    }
+  }
+  saveHisory(arr: CopyField[]): void {
+    if (arr.length > 1) {
+      console.log("Zapisywanie historii");
+
+      const tempHistory: CopyField[] = []
+      for (const object of arr) {
+        const copiedData: CopyField = {
+          x: object.x,
+          y: object.y,
+          backgroundPositionX: object.backgroundPositionX,
+          backgroundPositionY: object.backgroundPositionY,
+          backgroundImage: object.backgroundImage,
+        };
+        tempHistory.push(copiedData);
+      }
+      htmlElements.history.push(tempHistory)
+      console.log("[DEBBUGER] HISTORIA:");
+
+      console.log(htmlElements.history);
+
     }
   }
 

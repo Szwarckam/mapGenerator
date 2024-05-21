@@ -9,31 +9,34 @@ import { CopyField } from "./interfaces";
 function init(): void {
   const resizableDiv: HTMLDivElement = <HTMLDivElement>document.querySelector("#resizableDiv");
   Generator.genItems(8, 16, htmlElements.itemsDiv);
-  Generator.genItems(28, 20, htmlElements.fieldDiv);
+  Generator.genItems(24, 16, htmlElements.fieldDiv);
   document.addEventListener("mousedown", (e: MouseEvent) => {
     resizableDiv.style.display = "block";
     resizableDiv.style.position = "absolute";
     resizableDiv.style.width = "0px";
     resizableDiv.style.height = "0px";
     resizableDiv.style.backgroundColor = "rgba(36, 36, 36, 0.2)";
-    resizableDiv.style.left = `${e.clientX}px`;
-    resizableDiv.style.top = `${e.clientY}px`;
-    resizableDiv.dataset.positionX = `${e.clientX}`;
-    resizableDiv.dataset.positionY = `${e.clientY}`;
+    resizableDiv.style.left = `${e.pageX}px`;
+    resizableDiv.style.top = `${e.pageY}px`;
+    resizableDiv.dataset.positionX = `${e.pageX}`;
+    resizableDiv.dataset.positionY = `${e.pageY}`;
     document.body.append(resizableDiv);
   });
   document.addEventListener("mousemove", (e: MouseEvent) => {
     const ogX: number = parseInt(resizableDiv.dataset.positionX!);
     const ogY: number = parseInt(resizableDiv.dataset.positionY!);
-    resizableDiv.style.width = `${e.clientX - ogX}px`;
-    resizableDiv.style.height = `${e.clientY - ogY}px`;
-    if (e.clientX < ogX) {
-      resizableDiv.style.left = `${e.clientX}px`;
-      resizableDiv.style.width = `${ogX - e.clientX}px`;
+    // console.log({ x: ogX, y: ogY });
+    // console.log();
+
+    resizableDiv.style.width = `${e.pageX - ogX}px`;
+    resizableDiv.style.height = `${e.pageY - ogY}px`;
+    if (e.pageX < ogX) {
+      resizableDiv.style.left = `${e.pageX}px`;
+      resizableDiv.style.width = `${ogX - e.pageX}px`;
     }
-    if (e.clientY < ogY) {
-      resizableDiv.style.top = `${e.clientY}px`;
-      resizableDiv.style.height = `${ogY - e.clientY}px`;
+    if (e.pageY < ogY) {
+      resizableDiv.style.top = `${e.pageY}px`;
+      resizableDiv.style.height = `${ogY - e.pageY}px`;
     }
   });
   document.addEventListener("mouseup", (e: MouseEvent) => {
@@ -72,6 +75,7 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
     console.log(htmlElements.copied);
   } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyX") {
     console.log("Wycinanie");
+
     htmlElements.copied.length = 0;
     htmlElements.tempField.length = 0;
     for (const object of htmlElements.clickedField) {
@@ -88,6 +92,7 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
       object.backgroundImage = "";
       object.div.style.backgroundImage = "";
       object.div.style.backgroundPositionX = "";
+      object.saveHisory(htmlElements.copied)
     }
     console.log(htmlElements.copied);
 

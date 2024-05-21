@@ -1,7 +1,7 @@
 import htmlElements from "./data";
 import FieldDivElements from "./fieldDivs";
 import Generator from "./genrate";
-import { Position } from "./interfaces";
+import { Position, CopyField } from "./interfaces";
 
 let farthestElement: FieldDivElements = htmlElements.clickedField[0];
 let newLine: boolean = false;
@@ -42,14 +42,12 @@ export default class ItemDivElements {
             // console.log(object.div.style.backgroundImage);
           }
         }
+        this.saveHisory()
         console.log(htmlElements.clickedItem);
       }
     });
   }
   private automat(): void {
-    if (farthestElement) {
-    } else {
-    }
     farthestElement = htmlElements.clickedField[0];
     if (htmlElements.clickedField.length > 1) {
       for (let i = 1; i < htmlElements.clickedField.length; i++) {
@@ -125,6 +123,28 @@ export default class ItemDivElements {
           // console.log(object.div.style.backgroundImage);
         }
       }
+    }
+  }
+  saveHisory(): void {
+    if (htmlElements.clickedField.length > 1) {
+      console.log("Zapisywanie historii");
+
+      const tempHistory: CopyField[] = []
+      for (const object of htmlElements.clickedField) {
+        const copiedData: CopyField = {
+          x: object.x,
+          y: object.y,
+          backgroundPositionX: object.backgroundPositionX,
+          backgroundPositionY: object.backgroundPositionY,
+          backgroundImage: object.backgroundImage,
+        };
+        tempHistory.push(copiedData);
+      }
+      htmlElements.history.push(tempHistory)
+      console.log("[DEBBUGER] HISTORIA:");
+
+      console.log(htmlElements.history);
+
     }
   }
   public get position(): Position {

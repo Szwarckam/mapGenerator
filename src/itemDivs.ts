@@ -89,18 +89,14 @@ export default class ItemDivElements {
    *  Automat - automatycznie przechodzi do następnej komórki
    */
   private automat(): void {
-    this.findFarthestElement();
-    this.checkNewLine();
+    ItemDivElements.findFarthestElement();
+    ItemDivElements.checkNewLine();
 
     // console.log(farthestElement);
     if (this.isSameImage(farthestElement)) {
-      // console.log("Takie sam obrazek");
-      // console.log(farthestElement.x);
-      // console.log(farthestElement.y);
-
       this.findNextFarthestElement();
-      this.clearClickedFields();
-      this.updateNewLine();
+      ItemDivElements.clearClickedFields();
+      ItemDivElements.updateNewLine();
       this.markFarthestElement();
       this.updateClickedFields();
     } else {
@@ -111,7 +107,7 @@ export default class ItemDivElements {
   /**
    *  Wyszukuje najdalszego obiektu względem początku planszy (Punkt: 0,0)
    */
-  private findFarthestElement(): void {
+  static findFarthestElement(): void {
     farthestElement = fieldInfo.clickedField[0];
     if (fieldInfo.clickedField.length > 1) {
       for (let i = 1; i < fieldInfo.clickedField.length; i++) {
@@ -129,7 +125,7 @@ export default class ItemDivElements {
   /**
    *  Sprawdza czy jest to nowa linia
    */
-  private checkNewLine(): void {
+  private static checkNewLine(): void {
     if (farthestElement.x == divSize.fieldDivWidth - 1) {
       newLine = true;
     }
@@ -157,7 +153,7 @@ export default class ItemDivElements {
   /**
    *  Czyści graficznie pola
    */
-  private clearClickedFields(): void {
+  private static clearClickedFields(): void {
     for (const object of fieldInfo.clickedField) {
       object.div.classList.remove("marked");
       object.clicked = false;
@@ -167,9 +163,9 @@ export default class ItemDivElements {
   /**
    *  Wyszukuje następny najdalszegy obiekt względem początku planszy (Punkt: 0,0)
    */
-  private updateNewLine(): void {
+  private static updateNewLine(): void {
     if (newLine) {
-      farthestElement = <FieldDivElements>generator.fieldDivs.find((element) => {
+      farthestElement = <FieldDivElements>generator.fieldDivs.find((element): boolean => {
         return (
           element.x == farthestElement.x % divSize.fieldDivWidth &&
           element.y == (farthestElement.y + 1) % divSize.fieldDivHeight

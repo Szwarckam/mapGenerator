@@ -119,7 +119,7 @@ export default class FieldDivElements {
 
     this.div.addEventListener(
       "mouseover",
-      (e: MouseEvent) => {
+      (): void => {
         // console.log(e);
         if (fieldInfo.paste) {
           fieldInfo.tempField.length = 0;
@@ -151,7 +151,7 @@ export default class FieldDivElements {
       true
     );
 
-    this.div.addEventListener("mouseout", (e: MouseEvent) => {
+    this.div.addEventListener("mouseout", () => {
       // console.log(e);
 
       if (fieldInfo.paste) {

@@ -9,13 +9,13 @@ const handlerManager: HandlerMan = {
   statePosiotion: 0,
 
   initializeResizableDiv(resizableDiv: HTMLDivElement): void {
-    htmlElements.fieldDiv.addEventListener("mousedown", (e: MouseEvent) => {
+    htmlElements.fieldDiv.addEventListener("mousedown", (e: MouseEvent): void => {
       this.setupResizableDiv(e, resizableDiv);
     });
-    htmlElements.fieldDiv.addEventListener("mousemove", (e: MouseEvent) => {
+    htmlElements.fieldDiv.addEventListener("mousemove", (e: MouseEvent): void => {
       this.resizeDiv(e, resizableDiv);
     });
-    htmlElements.fieldDiv.addEventListener("mouseup", () => {
+    htmlElements.fieldDiv.addEventListener("mouseup", (): void => {
       this.hideResizableDiv(resizableDiv);
     });
   },

@@ -7,7 +7,7 @@ import handlerManager from "./handlers";
  * Funkcja ustale listeneray dla akcji np: kopiowania, wklejania
  */
 function setupEventListeners(): void {
-  document.addEventListener("keydown", (e: KeyboardEvent) => {
+  document.addEventListener("keydown", (e: KeyboardEvent): void => {
     htmlElements.contextMenu.style.display = "none";
     if (e.code == "Delete") {
       handlerManager.handleDelete();
@@ -41,10 +41,10 @@ function setupEventListeners(): void {
       // debugger
     }
   });
-  htmlElements.fieldDiv.addEventListener("click", () => {
+  htmlElements.fieldDiv.addEventListener("click", (): void => {
     htmlElements.contextMenu.style.display = "none";
   });
-  document.addEventListener("contextmenu", (e: MouseEvent) => {
+  document.addEventListener("contextmenu", (e: MouseEvent): void => {
     // console.log("ContextMenu");
     e.preventDefault();
 

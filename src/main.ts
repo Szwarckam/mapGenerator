@@ -28,7 +28,7 @@ function setupEventListeners(): void {
       handlerManager.handleRedo();
       // debugger
     } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyS") {
-      console.log("Zapisywanie mapy");
+      // console.log("Zapisywanie mapy");
 
       e.preventDefault();
       handlerManager.handleSave();
@@ -45,18 +45,18 @@ function setupEventListeners(): void {
     htmlElements.contextMenu.style.display = "none";
   });
   document.addEventListener("contextmenu", (e: MouseEvent) => {
-    console.log("ContextMenu");
+    // console.log("ContextMenu");
     e.preventDefault();
 
     htmlElements.contextMenu.style.display = htmlElements.contextMenu.style.display == "block" ? "none" : "block";
     htmlElements.contextMenu.style.top = `${e.pageY}px`;
     htmlElements.contextMenu.style.left = `${e.pageX}px`;
-    console.log(e);
+    // console.log(e);
   });
   htmlElements.contextMenu.addEventListener("click", (e: MouseEvent) => {
     const target = <HTMLDivElement>e.target;
     if (target) {
-      console.log(target.id);
+      // console.log(target.id);
       switch (target.id) {
         case "undo":
           handlerManager.handleUndo();

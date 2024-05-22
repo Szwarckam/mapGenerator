@@ -120,7 +120,7 @@ export default class FieldDivElements {
     this.div.addEventListener(
       "mouseover",
       (e: MouseEvent) => {
-        console.log(e);
+        // console.log(e);
         if (fieldInfo.paste) {
           fieldInfo.tempField.length = 0;
           const toClear = generator.fieldDivs.filter((el) => el.clicked);
@@ -152,7 +152,7 @@ export default class FieldDivElements {
     );
 
     this.div.addEventListener("mouseout", (e: MouseEvent) => {
-      console.log(e);
+      // console.log(e);
 
       if (fieldInfo.paste) {
         for (const object of fieldInfo.tempField) {
@@ -193,7 +193,7 @@ export default class FieldDivElements {
         object.backgroundImage = object.div.style.backgroundImage;
       }
       handlerManager.saveHistory();
-      console.log("MarkField", fieldInfo.tempField);
+      // console.log("MarkField", fieldInfo.tempField);
 
       fieldInfo.paste = false;
       fieldInfo.tempField.length = 0;

@@ -125,7 +125,7 @@ const handlerManager: HandlerMan = {
     if (fieldInfo.history.length > 0) {
       this.statePosiotion = this.statePosiotion - 1 == 0 ? this.statePosiotion : --this.statePosiotion;
       const lastState = fieldInfo.history[this.statePosiotion];
-      console.log({ Undo: lastState, pos: this.statePosiotion });
+      // console.log({ Undo: lastState, pos: this.statePosiotion });
       if (lastState) {
         this.restoreState(lastState);
       }
@@ -137,7 +137,7 @@ const handlerManager: HandlerMan = {
       this.statePosiotion =
         this.statePosiotion + 1 > fieldInfo.history.length - 1 ? this.statePosiotion : ++this.statePosiotion;
       const nextState = fieldInfo.history[this.statePosiotion];
-      console.log({ Redo: nextState, pos: this.statePosiotion });
+      // console.log({ Redo: nextState, pos: this.statePosiotion });
       // debugger
       if (nextState) {
         this.restoreState(nextState);
@@ -165,14 +165,14 @@ const handlerManager: HandlerMan = {
   },
 
   saveHistory(): void {
-    console.log(handlerManager.statePosiotion !== fieldInfo.history.length - 1);
+    // console.log(handlerManager.statePosiotion !== fieldInfo.history.length - 1);
 
     if (handlerManager.statePosiotion !== fieldInfo.history.length - 1) {
-      console.log("W środku historii", handlerManager.statePosiotion);
+      // console.log("W środku historii", handlerManager.statePosiotion);
       fieldInfo.history.splice(handlerManager.statePosiotion + 1);
-      console.log(fieldInfo.history);
+      // console.log(fieldInfo.history);
     }
-    console.log("Zapisywanie historii");
+    // console.log("Zapisywanie historii");
     const tempHistory: CopyField[] = generator.fieldDivs.map((object) => ({
       x: object.x,
       y: object.y,
@@ -182,11 +182,11 @@ const handlerManager: HandlerMan = {
     }));
     if (fieldInfo.history) {
       fieldInfo.history.push(tempHistory);
-      console.log("[DEBBUGER] HISTORIA:");
-      console.log(fieldInfo.history);
+      // console.log("[DEBBUGER] HISTORIA:");
+      // console.log(fieldInfo.history);
       // debugger
       handlerManager.statePosiotion++;
-      console.log(handlerManager.statePosiotion);
+      // console.log(handlerManager.statePosiotion);
     }
   },
 
@@ -206,7 +206,7 @@ const handlerManager: HandlerMan = {
   handleRead(e: Event): void {
     const input = e.target as HTMLInputElement;
     const file = input.files![0];
-    console.log(file);
+    // console.log(file);
 
     const reader = new FileReader();
 
@@ -215,9 +215,9 @@ const handlerManager: HandlerMan = {
     reader.onload = function () {
       if (reader.result) {
         const arr = JSON.parse(reader.result as string);
-        console.log("Tablica:", arr);
+        // console.log("Tablica:", arr);
         fieldInfo.history = arr;
-        console.log(history);
+        // console.log(history);
         handlerManager.statePosiotion = fieldInfo.history.length - 1;
         handlerManager.restoreState(fieldInfo.history[handlerManager.statePosiotion]);
       }

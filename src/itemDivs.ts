@@ -55,7 +55,7 @@ export default class ItemDivElements {
   private addClickListener(): void {
     this.div.addEventListener("mousedown", () => {
       if (htmlElements.automat.checked) {
-        console.log("Kliknięty");
+        // console.log("Kliknięty");
         this.automat();
       } else {
         this.handleClick();
@@ -69,7 +69,7 @@ export default class ItemDivElements {
       this.updateClickedFields();
     }
 
-    console.log(fieldInfo.clickedItem);
+    // console.log(fieldInfo.clickedItem);
   }
   /**
    *  Zmienia graficzne zaznaczone pola
@@ -92,11 +92,11 @@ export default class ItemDivElements {
     this.findFarthestElement();
     this.checkNewLine();
 
-    console.log(farthestElement);
+    // console.log(farthestElement);
     if (this.isSameImage(farthestElement)) {
-      console.log("Takie sam obrazek");
-      console.log(farthestElement.x);
-      console.log(farthestElement.y);
+      // console.log("Takie sam obrazek");
+      // console.log(farthestElement.x);
+      // console.log(farthestElement.y);
 
       this.findNextFarthestElement();
       this.clearClickedFields();
@@ -104,7 +104,7 @@ export default class ItemDivElements {
       this.markFarthestElement();
       this.updateClickedFields();
     } else {
-      console.log("Inny obrazek");
+      // console.log("Inny obrazek");
       this.updateClickedFields();
     }
   }
@@ -175,7 +175,7 @@ export default class ItemDivElements {
           element.y == (farthestElement.y + 1) % divSize.fieldDivHeight
         );
       });
-      console.log("Nowa linia", farthestElement);
+      // console.log("Nowa linia", farthestElement);
       newLine = !newLine;
     }
     if (farthestElement.x == divSize.fieldDivWidth - 1) {

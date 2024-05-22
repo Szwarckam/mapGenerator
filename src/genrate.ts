@@ -11,7 +11,7 @@ const generator: Generator = {
   itemDivs: <ItemDivElements[]>[],
   fieldDivs: <FieldDivElements[]>[],
   genItems(x: number, y: number, div: HTMLDivElement): void {
-    console.log(div.id);
+    // console.log(div.id);
     // if (!this.divs[div.id]) {
     // this.divs[div.id] = [];
     // }

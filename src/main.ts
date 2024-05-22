@@ -49,8 +49,8 @@ function setupEventListeners(): void {
     e.preventDefault();
 
     htmlElements.contextMenu.style.display = htmlElements.contextMenu.style.display == "block" ? "none" : "block";
-    htmlElements.contextMenu.style.top = `${e.pageY}px`;
-    htmlElements.contextMenu.style.left = `${e.pageX}px`;
+    htmlElements.contextMenu.style.top = `${e.pageY - 50}px`;
+    htmlElements.contextMenu.style.left = `${e.pageX - 50}px`;
     // console.log(e);
   });
   htmlElements.contextMenu.addEventListener("click", (e: MouseEvent) => {

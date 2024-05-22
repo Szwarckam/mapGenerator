@@ -46,7 +46,11 @@ export default class FieldDivElements {
    *  Rodzic diva odpowiadający tej klasie
    */
   parentDiv: HTMLDivElement;
-
+  /**
+   * Inicjalizuje obsługę diva.
+   * @param posObj Oiekt zawierający współrzędne
+   * @param parentDiv Rodzic diva
+   */
   constructor(posObj: Position, parentDiv: HTMLDivElement) {
     this.x = posObj.x;
     this.y = posObj.y;

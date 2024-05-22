@@ -1,15 +1,37 @@
 import htmlElements from "./data";
+import fieldInfo from "./divInfo";
 import FieldDivElements from "./fieldDivs";
-import Generator from "./genrate";
-import { Position, CopyField } from "./interfaces";
-
-let farthestElement: FieldDivElements = htmlElements.clickedField[0];
+import generator from "./genrate";
+import handlerManager from "./handlers";
+import { Position } from "./interfaces";
+import divSize from "./size";
+/**
+ *  Najdalszy div do automatu
+ */
+let farthestElement: FieldDivElements = fieldInfo.clickedField[0];
+/**
+ *  Informacja o nowej lini dla automatu
+ */
 let newLine: boolean = false;
+
 export default class ItemDivElements {
-  private x: number;
-  private y: number;
+  /**
+   *  Współrzędna X
+   */
+  public x: number;
+  /**
+   *  Współrzędna Y
+   */
+  public y: number;
+  /**
+   *  Div odpowiadający tej klasie
+   */
   div: HTMLDivElement;
+  /**
+   *  Rodzic diva odpowiadający tej klasie
+   */
   parentDiv: HTMLDivElement;
+
   constructor(posObj: Position, parentDiv: HTMLDivElement) {
     this.x = posObj.x;
     this.y = posObj.y;
@@ -20,134 +42,155 @@ export default class ItemDivElements {
     this.createDiv();
     this.addClickListener();
   }
+  /**
+   *  Tworzy div i dodaje go do rodzica
+   */
   private createDiv(): void {
     this.parentDiv.append(this.div);
     this.div.classList.add("items-div");
   }
+  /**
+   *  Obsługa eventListenerów
+   */
   private addClickListener(): void {
     this.div.addEventListener("mousedown", () => {
       if (htmlElements.automat.checked) {
         console.log("Kliknięty");
         this.automat();
-      } else if (!htmlElements.automat.checked) {
-        htmlElements.clickedItem = this;
-        if (htmlElements.clickedField.length > 0) {
-          for (const object of htmlElements.clickedField) {
-            object.div.style.backgroundImage = 'url("./src/img/sprite2.png")';
-            object.div.style.backgroundPositionX = `-${this.x * 50}px`;
-            object.div.style.backgroundPositionY = `-${this.y * 50}px`;
-            object.backgroundPositionX = `-${this.x * 50}px`;
-            object.backgroundPositionY = `-${this.y * 50}px`;
-            object.backgroundImage = object.div.style.backgroundImage;
-            // console.log(object.div.style.backgroundImage);
-          }
-        }
-        this.saveHisory()
-        console.log(htmlElements.clickedItem);
+      } else {
+        this.handleClick();
       }
     });
   }
+
+  private handleClick(): void {
+    fieldInfo.clickedItem = this;
+    if (fieldInfo.clickedField.length > 0) {
+      this.updateClickedFields();
+    }
+
+    console.log(fieldInfo.clickedItem);
+  }
+  /**
+   *  Zmienia graficzne zaznaczone pola
+   */
+  private updateClickedFields(): void {
+    for (const object of fieldInfo.clickedField) {
+      object.div.style.backgroundImage = 'url("./src/img/sprite2.png")';
+      object.div.style.backgroundPositionX = `-${this.x * 50}px`;
+      object.div.style.backgroundPositionY = `-${this.y * 50}px`;
+      object.backgroundPositionX = `-${this.x * 50}px`;
+      object.backgroundPositionY = `-${this.y * 50}px`;
+      object.backgroundImage = object.div.style.backgroundImage;
+    }
+    handlerManager.saveHistory();
+  }
+  /**
+   *  Automat - automatycznie przechodzi do następnej komórki
+   */
   private automat(): void {
-    farthestElement = htmlElements.clickedField[0];
-    if (htmlElements.clickedField.length > 1) {
-      for (let i = 1; i < htmlElements.clickedField.length; i++) {
-        let obecnyElement: FieldDivElements = htmlElements.clickedField[i];
+    this.findFarthestElement();
+    this.checkNewLine();
+
+    console.log(farthestElement);
+    if (this.isSameImage(farthestElement)) {
+      console.log("Takie sam obrazek");
+      console.log(farthestElement.x);
+      console.log(farthestElement.y);
+
+      this.findNextFarthestElement();
+      this.clearClickedFields();
+      this.updateNewLine();
+      this.markFarthestElement();
+      this.updateClickedFields();
+    } else {
+      console.log("Inny obrazek");
+      this.updateClickedFields();
+    }
+  }
+  /**
+   *  Wyszukuje najdalszego obiektu względem początku planszy (Punkt: 0,0)
+   */
+  private findFarthestElement(): void {
+    farthestElement = fieldInfo.clickedField[0];
+    if (fieldInfo.clickedField.length > 1) {
+      for (let i = 1; i < fieldInfo.clickedField.length; i++) {
+        let obecnyElement: FieldDivElements = fieldInfo.clickedField[i];
         const weight = 1000;
-        const actualWeightedPosition = obecnyElement.position.x + obecnyElement.position.y * weight;
-        const farthestWeightedPosition = farthestElement.position.x + farthestElement.position.y * weight;
+        const actualWeightedPosition = obecnyElement.x + obecnyElement.y * weight;
+        const farthestWeightedPosition = farthestElement.x + farthestElement.y * weight;
 
         if (actualWeightedPosition > farthestWeightedPosition) {
           farthestElement = obecnyElement;
         }
       }
-      if (farthestElement.x == 27) {
-        newLine = true;
-      }
     }
-
-    console.log(farthestElement);
-    if (
-      farthestElement.div.style.backgroundPositionX === `-${this.x * 50}px` &&
-      farthestElement.div.style.backgroundPositionY == `-${this.y * 50}px`
-    ) {
-      console.log("Takie sam obrazek");
-      console.log(farthestElement.position);
-      farthestElement = <FieldDivElements>Generator.fieldDivs.find((element) => {
-        console.log(element.position);
-
+  }
+  /**
+   *  Sprawdza czy jest to nowa linia
+   */
+  private checkNewLine(): void {
+    if (farthestElement.x == divSize.fieldDivWidth - 1) {
+      newLine = true;
+    }
+  }
+  /**
+   *  Kontroluje czy następna komórka ma to samo zdjęcie jake automat powinien ustawić
+   */
+  private isSameImage(element: FieldDivElements): boolean {
+    return (
+      element.div.style.backgroundPositionX === `-${this.x * 50}px` &&
+      element.div.style.backgroundPositionY == `-${this.y * 50}px`
+    );
+  }
+  /**
+   *  Wyszukuje następny najdalszegy obiekt względem początku planszy (Punkt: 0,0)
+   */
+  private findNextFarthestElement(): void {
+    farthestElement = <FieldDivElements>generator.fieldDivs.find((element) => {
+      return (
+        element.x == (farthestElement.x + 1) % divSize.fieldDivWidth &&
+        element.y == farthestElement.y % divSize.fieldDivHeight
+      );
+    });
+  }
+  /**
+   *  Czyści graficznie pola
+   */
+  private clearClickedFields(): void {
+    for (const object of fieldInfo.clickedField) {
+      object.div.classList.remove("marked");
+      object.clicked = false;
+    }
+    fieldInfo.clickedField.length = 0;
+  }
+  /**
+   *  Wyszukuje następny najdalszegy obiekt względem początku planszy (Punkt: 0,0)
+   */
+  private updateNewLine(): void {
+    if (newLine) {
+      farthestElement = <FieldDivElements>generator.fieldDivs.find((element) => {
         return (
-          element.position.x == (farthestElement.position.x + 1) % 28 &&
-          element.position.y == farthestElement.position.y % 20
+          element.x == farthestElement.x % divSize.fieldDivWidth &&
+          element.y == (farthestElement.y + 1) % divSize.fieldDivHeight
         );
       });
-      console.log(farthestElement);
-      for (const object of htmlElements.clickedField) {
-        object.div.classList.remove("marked");
-        object.clicked = false;
-      }
-      htmlElements.clickedField.length = 0;
-      console.log(htmlElements.clickedField.length);
-
-      if (newLine) {
-        farthestElement = <FieldDivElements>Generator.fieldDivs.find((element) => {
-          console.log(element.position);
-
-          return (
-            element.position.x == farthestElement.position.x % 28 &&
-            element.position.y == (farthestElement.position.y + 1) % 20
-          );
-        });
-        newLine = !newLine;
-      }
-      if (farthestElement.x == 27) {
-        newLine = true;
-      }
-      farthestElement.clicked = true;
-      farthestElement.div.classList.add("marked");
-
-      farthestElement.div.style.backgroundImage = 'url("./src/img/sprite2.png")';
-      farthestElement.div.style.backgroundPositionX = `-${this.x * 50}px`;
-      farthestElement.div.style.backgroundPositionY = `-${this.y * 50}px`;
-
-      htmlElements.clickedField.push(farthestElement);
-    } else {
-      console.log("Inny  obrazek");
-
-      if (htmlElements.clickedField.length > 0) {
-        for (const object of htmlElements.clickedField) {
-          object.div.style.backgroundImage = 'url("./src/img/sprite2.png")';
-          object.div.style.backgroundPositionX = `-${this.x * 50}px`;
-          object.div.style.backgroundPositionY = `-${this.y * 50}px`;
-          object.backgroundPositionX = `-${this.y * 50}px`;
-          object.backgroundPositionY = `-${this.y * 50}px`;
-          // console.log(object.div.style.backgroundImage);
-        }
-      }
+      console.log("Nowa linia", farthestElement);
+      newLine = !newLine;
+    }
+    if (farthestElement.x == divSize.fieldDivWidth - 1) {
+      newLine = true;
     }
   }
-  saveHisory(): void {
-    if (htmlElements.clickedField.length > 1) {
-      console.log("Zapisywanie historii");
-
-      const tempHistory: CopyField[] = []
-      for (const object of htmlElements.clickedField) {
-        const copiedData: CopyField = {
-          x: object.x,
-          y: object.y,
-          backgroundPositionX: object.backgroundPositionX,
-          backgroundPositionY: object.backgroundPositionY,
-          backgroundImage: object.backgroundImage,
-        };
-        tempHistory.push(copiedData);
-      }
-      htmlElements.history.push(tempHistory)
-      console.log("[DEBBUGER] HISTORIA:");
-
-      console.log(htmlElements.history);
-
-    }
-  }
-  public get position(): Position {
-    return { x: this.x, y: this.y };
+  /**
+   *  Zaznacza graficznie element, który automat ma zmienić
+   */
+  private markFarthestElement(): void {
+    farthestElement.clicked = true;
+    farthestElement.div.classList.add("marked");
+    farthestElement.div.style.backgroundImage = 'url("./src/img/sprite2.png")';
+    farthestElement.div.style.backgroundPositionX = `-${this.x * 50}px`;
+    farthestElement.div.style.backgroundPositionY = `-${this.y * 50}px`;
+    fieldInfo.clickedField.push(farthestElement);
   }
 }

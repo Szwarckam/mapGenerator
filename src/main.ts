@@ -1,108 +1,105 @@
-// console.log(arr);
-// htmlElements.itemsDiv.style.backgroundImage = 'url("./img/sprite2.png")';
-
 import htmlElements from "./data";
 // import FieldDivElements from "./fieldDivs";
-import Generator from "./genrate";
-import { CopyField } from "./interfaces";
+import generator from "./genrate";
+import divSize from "./size";
+import handlerManager from "./handlers";
+/**
+ * Funkcja ustale listeneray dla akcji np: kopiowania, wklejania
+ */
+function setupEventListeners(): void {
+  document.addEventListener("keydown", (e: KeyboardEvent) => {
+    htmlElements.contextMenu.style.display = "none";
+    if (e.code == "Delete") {
+      handlerManager.handleDelete();
+      // debugger
+    } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyC") {
+      handlerManager.handleCopy();
+      // debugger
+    } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyX") {
+      handlerManager.handleCut();
+      // debugger
+    } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyV") {
+      handlerManager.handlePaste();
+      // debugger
+    } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyZ") {
+      handlerManager.handleUndo();
+      // debugger
+    } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyY") {
+      handlerManager.handleRedo();
+      // debugger
+    } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyS") {
+      console.log("Zapisywanie mapy");
 
-function init(): void {
-  const resizableDiv: HTMLDivElement = <HTMLDivElement>document.querySelector("#resizableDiv");
-  Generator.genItems(8, 16, htmlElements.itemsDiv);
-  Generator.genItems(24, 16, htmlElements.fieldDiv);
-  document.addEventListener("mousedown", (e: MouseEvent) => {
-    resizableDiv.style.display = "block";
-    resizableDiv.style.position = "absolute";
-    resizableDiv.style.width = "0px";
-    resizableDiv.style.height = "0px";
-    resizableDiv.style.backgroundColor = "rgba(36, 36, 36, 0.2)";
-    resizableDiv.style.left = `${e.pageX}px`;
-    resizableDiv.style.top = `${e.pageY}px`;
-    resizableDiv.dataset.positionX = `${e.pageX}`;
-    resizableDiv.dataset.positionY = `${e.pageY}`;
-    document.body.append(resizableDiv);
+      e.preventDefault();
+      handlerManager.handleSave();
+      // debugger
+    } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyL") {
+      e.preventDefault();
+      const input = <HTMLInputElement>document.querySelector("#input");
+      input.addEventListener("change", handlerManager.handleRead);
+      input.click();
+      // debugger
+    }
   });
-  document.addEventListener("mousemove", (e: MouseEvent) => {
-    const ogX: number = parseInt(resizableDiv.dataset.positionX!);
-    const ogY: number = parseInt(resizableDiv.dataset.positionY!);
-    // console.log({ x: ogX, y: ogY });
-    // console.log();
+  htmlElements.fieldDiv.addEventListener("click", () => {
+    htmlElements.contextMenu.style.display = "none";
+  });
+  document.addEventListener("contextmenu", (e: MouseEvent) => {
+    console.log("ContextMenu");
+    e.preventDefault();
 
-    resizableDiv.style.width = `${e.pageX - ogX}px`;
-    resizableDiv.style.height = `${e.pageY - ogY}px`;
-    if (e.pageX < ogX) {
-      resizableDiv.style.left = `${e.pageX}px`;
-      resizableDiv.style.width = `${ogX - e.pageX}px`;
-    }
-    if (e.pageY < ogY) {
-      resizableDiv.style.top = `${e.pageY}px`;
-      resizableDiv.style.height = `${ogY - e.pageY}px`;
-    }
+    htmlElements.contextMenu.style.display = htmlElements.contextMenu.style.display == "block" ? "none" : "block";
+    htmlElements.contextMenu.style.top = `${e.pageY}px`;
+    htmlElements.contextMenu.style.left = `${e.pageX}px`;
+    console.log(e);
   });
-  document.addEventListener("mouseup", (e: MouseEvent) => {
-    resizableDiv.style.display = "none";
+  htmlElements.contextMenu.addEventListener("click", (e: MouseEvent) => {
+    const target = <HTMLDivElement>e.target;
+    if (target) {
+      console.log(target.id);
+      switch (target.id) {
+        case "undo":
+          handlerManager.handleUndo();
+          break;
+        case "redo":
+          handlerManager.handleRedo();
+          break;
+        case "cut":
+          handlerManager.handleCut();
+          break;
+        case "copy":
+          handlerManager.handleCopy();
+          break;
+        case "paste":
+          handlerManager.handlePaste();
+          break;
+        case "delete":
+          handlerManager.handleDelete();
+          break;
+        case "saveToFile":
+          handlerManager.handleSave();
+          break;
+        case "LoadFromFile":
+          const input = <HTMLInputElement>document.querySelector("#input");
+          input.addEventListener("change", handlerManager.handleRead);
+          input.click();
+          break;
+      }
+      htmlElements.contextMenu.style.display = "none";
+    }
   });
 }
+/**
+ *  Inicjuje całą aplikacje
+ */
+function init(): void {
+  const resizableDiv: HTMLDivElement = <HTMLDivElement>document.querySelector("#resizableDiv");
+  generator.genItems(divSize.itemsDivWidth, divSize.itemsDivHeight, htmlElements.itemsDiv);
+  generator.genItems(divSize.fieldDivWidth, divSize.fieldDivHeight, htmlElements.fieldDiv);
+  handlerManager.saveHistory();
+  handlerManager.initializeResizableDiv(resizableDiv);
 
-document.addEventListener("keydown", (e: KeyboardEvent) => {
-  if (e.code == "Delete") {
-    console.log("Usuwanie");
-    for (const object of htmlElements.clickedField) {
-      object.div.style.backgroundImage = "";
-      object.backgroundImage = "";
-      object.backgroundPositionX = "";
-      object.backgroundPositionY = "";
-      object.clicked = true;
-      object.div.classList.add("marked");
-    }
-  } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyC") {
-    console.log("Kopiowanie");
-    htmlElements.copied.length = 0;
-    htmlElements.tempField.length = 0;
-    for (const object of htmlElements.clickedField) {
-      const copiedData: CopyField = {
-        x: object.x,
-        y: object.y,
-        backgroundPositionX: object.backgroundPositionX,
-        backgroundPositionY: object.backgroundPositionY,
-        backgroundImage: object.backgroundImage,
-      };
-      htmlElements.copied.push(copiedData);
-    }
-    console.log(htmlElements.copied);
-
-    // htmlElements.copied = [...htmlElements.clickedField];
-    console.log(htmlElements.copied);
-  } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyX") {
-    console.log("Wycinanie");
-
-    htmlElements.copied.length = 0;
-    htmlElements.tempField.length = 0;
-    for (const object of htmlElements.clickedField) {
-      const copiedData: CopyField = {
-        x: object.x,
-        y: object.y,
-        backgroundPositionX: object.backgroundPositionX,
-        backgroundPositionY: object.backgroundPositionY,
-        backgroundImage: object.backgroundImage,
-      };
-      htmlElements.copied.push(copiedData);
-      object.backgroundPositionX = "";
-      object.backgroundPositionY = "";
-      object.backgroundImage = "";
-      object.div.style.backgroundImage = "";
-      object.div.style.backgroundPositionX = "";
-      object.saveHisory(htmlElements.copied)
-    }
-    console.log(htmlElements.copied);
-
-    // htmlElements.copied = [...htmlElements.clickedField];
-    console.log(htmlElements.copied);
-  } else if ((e.ctrlKey || e.metaKey) && e.code == "KeyV") {
-    if (htmlElements.copied.length > 0) {
-      htmlElements.paste = true;
-    }
-  }
-});
+  setupEventListeners();
+}
 
 init();

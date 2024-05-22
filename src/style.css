@@ -32,12 +32,14 @@ body {
   /* min-width: 320px; */
   /* min-height: 100vh; */
   background-color: #242424;
-  user-select: none;
+  /* user-select: none; */
+  -webkit-user-select: none;
 }
 
 #app {
   /* max-width: 1940px; */
   margin: 0 auto;
+  margin-top: 50px;
   padding: 10px;
   text-align: center;
   display: flex;
@@ -58,15 +60,16 @@ body {
   background-image: url("./img/sprite2.png");
   display: flex;
   flex-wrap: wrap;
-  background-color: rgb(139, 88, 21);
+  background-color: #211f1f;
+  /* border: 1px solid black; */
 }
 
 #field {
   position: relative;
   width: 1200px;
   height: 800px;
-  background-color: palegoldenrod;
-
+  background-color: #211f1f;
+  /* border: 2px dotted rgba(98, 0, 255, 0.2); */
   /* display: grid; */
 }
 
@@ -79,19 +82,24 @@ body {
 }
 
 .items-div:hover {
-  background-color: rgba(36, 36, 36, 0.2);
-  border: 1px solid black;
+  background-color: rgba(255, 255, 0, 0.2);
+  border: 1px solid rgb(153, 231, 8);
 }
 
 .marked {
+  background-color: rgba(98, 0, 255, 0.2);
+  border: 1px solid rgb(155, 15, 230);
+}
+
+.temp-marked {
   background-color: rgba(255, 62, 62, 0.2);
   border: 1px solid rgb(255, 0, 0);
 }
 
 #nav {
-  width: 100vw;
+  width: 100%;
   height: 50px;
-  background-color: aqua;
+  background-color: rgba(36, 36, 36, 0.2);
   position: absolute;
   display: flex;
   justify-content: center;
@@ -106,6 +114,30 @@ body {
   z-index: 1;
 }
 
+#contextMenu {
+  position: absolute;
+  display: flex;
+  width: 100px;
+  height: 240px;
+  flex-direction: column;
+  align-items: center;
+  z-index: 200;
+  background-color: antiquewhite;
+  border-radius: 3px;
+  display: none;
+}
+
+#contextMenu > div {
+  width: 100px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#contextMenu > div:hover {
+  background-color: rgb(138, 123, 103);
+  color: wheat;
+}
 /* #resizableDiv {
   width: 100px;
   height: 100px;

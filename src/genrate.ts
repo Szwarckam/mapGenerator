@@ -1,9 +1,13 @@
-import Canvas from "./canvas";
+// import Canvas from "./canvas";
 import ItemDivElements from "./itemDivs";
 import FieldDivElements from "./fieldDivs";
+import { Generator } from "./interfaces";
 // import htmlElements from "./data";
-const Generator = {
-  canvas: <Canvas>new Canvas({ height: 1000, width: 1400 }),
+/**
+ *  Obiekt Generacji
+ */
+const generator: Generator = {
+  //canvas: <Canvas>new Canvas({ height: 1000, width: 1400 }),
   itemDivs: <ItemDivElements[]>[],
   fieldDivs: <FieldDivElements[]>[],
   genItems(x: number, y: number, div: HTMLDivElement): void {
@@ -28,4 +32,4 @@ const Generator = {
 
 // canvasArr.push(newCanvas);
 
-export default Generator;
+export default generator;

@@ -142,7 +142,7 @@ export default class FieldDivElements {
 
     this.div.addEventListener(
       "mouseover",
-      (): void => {
+      (e: MouseEvent): void => {
         // console.log(e);
         if (fieldInfo.paste) {
           fieldInfo.tempField.length = 0;
@@ -169,15 +169,27 @@ export default class FieldDivElements {
               }
             }
           }
-        } else if (mouseDown) {
-          const elementsInBounds = this.findArray(fieldInfo.clickedField[0], this);
-          console.log(elementsInBounds);
+        } else if (mouseDown && !e.ctrlKey) {
+          if (extendStart) {
+            const elementsInBounds = this.findArray(extendStart, this);
+            console.log(elementsInBounds);
 
-          // fieldInfo.clickedField = elementsInBounds;
-          for (const object of elementsInBounds) {
-            object.div.classList.add("marked");
-            // object.clicked = true;
+            // fieldInfo.clickedField = elementsInBounds;
+            for (const object of elementsInBounds) {
+              object.div.classList.add("marked");
+              // object.clicked = true;
+            }
+          } else {
+            const elementsInBounds = this.findArray(fieldInfo.clickedField[0], this);
+            console.log(elementsInBounds);
+
+            // fieldInfo.clickedField = elementsInBounds;
+            for (const object of elementsInBounds) {
+              object.div.classList.add("marked");
+              // object.clicked = true;
+            }
           }
+
         }
       },
       true

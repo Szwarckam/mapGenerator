@@ -5,6 +5,7 @@ import generator from "./genrate";
 import handlerManager from "./handlers";
 import { Position } from "./interfaces";
 import divSize from "./size";
+
 /**
  *  Najdalszy div do automatu
  */
@@ -61,6 +62,7 @@ export default class ItemDivElements {
       if (htmlElements.automat.checked) {
         // console.log("Kliknięty");
         this.automat();
+        // isFirst = true
       } else {
         this.handleClick();
       }
@@ -97,7 +99,7 @@ export default class ItemDivElements {
     ItemDivElements.checkNewLine();
 
     // console.log(farthestElement);
-    if (this.isSameImage(farthestElement)) {
+    if (!handlerManager.isFirst) {
       this.findNextFarthestElement();
       ItemDivElements.clearClickedFields();
       ItemDivElements.updateNewLine();
@@ -106,6 +108,7 @@ export default class ItemDivElements {
     } else {
       // console.log("Inny obrazek");
       this.updateClickedFields();
+      handlerManager.isFirst = false
     }
   }
   /**

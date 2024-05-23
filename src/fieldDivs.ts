@@ -6,7 +6,7 @@ import handlerManager from "./handlers";
  *  Przetrzymuje informacje o początkowym polu rozszerzenia.
  */
 let extendStart: FieldDivElements | null = null;
-
+let mouseDown: boolean = false
 /**
  *  Tworzy klasę obiektu dla pola rozstawaiania.
  */
@@ -74,6 +74,7 @@ export default class FieldDivElements {
    */
   private addClickListener(): void {
     this.div.addEventListener("mousedown", (e: MouseEvent) => {
+      mouseDown = true
       if (e.button === 0) {
         if (!(e.ctrlKey || e.metaKey)) {
           for (const object of fieldInfo.clickedField) {
@@ -82,7 +83,7 @@ export default class FieldDivElements {
           }
           fieldInfo.clickedField.length = 0;
           fieldInfo.clickedField.push(this);
-        } else if ((e.ctrlKey || e.metaKey) && !this.clicked) {
+        } else if ((e.ctrlKey || e.metaKey)) {
           extendStart = this;
         }
       }
@@ -91,29 +92,47 @@ export default class FieldDivElements {
     this.div.addEventListener(
       "mouseup",
       (e: MouseEvent) => {
+        mouseDown = false
+        console.log(extendStart);
+
         if (e.button === 0) {
           if (!(e.ctrlKey || e.metaKey)) {
             fieldInfo.clickedField.push(this);
             this.markField();
-          } else if ((e.ctrlKey || e.metaKey) && this.clicked) {
-            fieldInfo.clickedField = fieldInfo.clickedField.filter((element) => {
-              return element.x !== this.x || element.y !== this.y;
-            });
-            this.div.classList.remove("marked");
-            this.clicked = false;
-          } else if ((e.ctrlKey || e.metaKey) && !this.clicked) {
+
+          } else if ((e.ctrlKey || e.metaKey)) {
             if (extendStart) {
-              const arr = this.findArray(extendStart, this);
-              for (const object of arr) {
-                extendStart = null;
-                object.div.classList.add("marked");
-                object.clicked = true;
-                fieldInfo.clickedField.push(object);
+              console.log(this);
+              if (!extendStart.clicked || !this.clicked) {
+
+
+                console.log("Poszerz wewnątrz");
+                console.log(extendStart);
+                console.log(this);
+
+                const arr = this.findArray(extendStart, this);
+                for (const object of arr) {
+                  extendStart = null;
+                  object.div.classList.add("marked");
+                  object.clicked = true;
+                  fieldInfo.clickedField.push(object);
+                }
+
+
+              } else if ((e.ctrlKey || e.metaKey) && this.clicked) {
+                fieldInfo.clickedField = fieldInfo.clickedField.filter((element) => {
+                  return element.x !== this.x || element.y !== this.y;
+                });
+                this.div.classList.remove("marked");
+                this.clicked = false;
+
+              } else if ((e.ctrlKey || e.metaKey) && this.clicked) {
+                fieldInfo.clickedField = fieldInfo.clickedField.filter((element) => {
+                  return element.x !== this.x || element.y !== this.y;
+                });
+                this.div.classList.remove("marked");
+                this.clicked = false;
               }
-            } else {
-              fieldInfo.clickedField.push(this);
-              this.clicked = true;
-              this.div.classList.add("marked");
             }
           }
         }
@@ -150,6 +169,15 @@ export default class FieldDivElements {
               }
             }
           }
+        } else if (mouseDown) {
+          const elementsInBounds = this.findArray(fieldInfo.clickedField[0], this);
+          console.log(elementsInBounds);
+
+          // fieldInfo.clickedField = elementsInBounds;
+          for (const object of elementsInBounds) {
+            object.div.classList.add("marked");
+            // object.clicked = true;
+          }
         }
       },
       true
@@ -157,6 +185,17 @@ export default class FieldDivElements {
 
     this.div.addEventListener("mouseout", () => {
       // console.log(e);
+      // const toClear = generator.fieldDivs.filter((el) => el == true);
+      if (mouseDown) {
+        for (const object of generator.fieldDivs) {
+          // object.div.style.backgroundImage = "";
+          if (!object.clicked) {
+            object.div.classList.remove("marked");
+          }
+
+          // object.clicked = true;
+        }
+      }
 
       if (fieldInfo.paste) {
         for (const object of fieldInfo.tempField) {
@@ -203,20 +242,23 @@ export default class FieldDivElements {
       fieldInfo.tempField.length = 0;
       fieldInfo.clickedField.length = 0;
     } else {
-      if (
-        fieldInfo.clickedField[0].x !== fieldInfo.clickedField[1].x ||
-        fieldInfo.clickedField[0].y !== fieldInfo.clickedField[1].y
-      ) {
-        const elementsInBounds = this.findArray(fieldInfo.clickedField[0], fieldInfo.clickedField[1]);
-        fieldInfo.clickedField = elementsInBounds;
-        for (const object of fieldInfo.clickedField) {
-          object.div.classList.add("marked");
-          object.clicked = true;
+      if (fieldInfo.clickedField.length > 1) {
+        if (
+          fieldInfo.clickedField[0].x !== fieldInfo.clickedField[1].x ||
+          fieldInfo.clickedField[0].y !== fieldInfo.clickedField[1].y
+        ) {
+          const elementsInBounds = this.findArray(fieldInfo.clickedField[0], fieldInfo.clickedField[1]);
+          fieldInfo.clickedField = elementsInBounds;
+          for (const object of fieldInfo.clickedField) {
+            object.div.classList.add("marked");
+            object.clicked = true;
+          }
+        } else {
+          fieldInfo.clickedField[0].div.classList.add("marked");
+          fieldInfo.clickedField[0].clicked = true;
         }
-      } else {
-        fieldInfo.clickedField[0].div.classList.add("marked");
-        fieldInfo.clickedField[0].clicked = true;
       }
+
     }
   }
 }

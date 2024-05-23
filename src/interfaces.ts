@@ -122,6 +122,7 @@ export interface HandlerMan {
    * Pozycja aktualnego stanu w historii.
    */
   statePosiotion: number;
+  isFirst: boolean;
   /**
    * Ukrywa element zmieniający rozmiar.
    * @param resizableDiv Div do ukrycia.

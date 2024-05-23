@@ -7,7 +7,7 @@ import { CopyField, HandlerMan } from "./interfaces";
  */
 const handlerManager: HandlerMan = {
   statePosiotion: 0,
-
+  isFirst: true,
   initializeResizableDiv(resizableDiv: HTMLDivElement): void {
     htmlElements.fieldDiv.addEventListener("mousedown", (e: MouseEvent): void => {
       this.setupResizableDiv(e, resizableDiv);
@@ -222,7 +222,7 @@ const handlerManager: HandlerMan = {
         handlerManager.restoreState(fieldInfo.history[handlerManager.statePosiotion]);
       }
     };
-
+    fieldInfo.clickedField.length = 0
     reader.onerror = function (error) {
       console.error("Błąd podczas wczytywania pliku:", error);
     };

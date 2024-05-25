@@ -6,7 +6,7 @@ import handlerManager from "./handlers";
  *  Przetrzymuje informacje o początkowym polu rozszerzenia.
  */
 let extendStart: FieldDivElements | null = null;
-let mouseDown: boolean = false
+let mouseDown: boolean = false;
 /**
  *  Tworzy klasę obiektu dla pola rozstawaiania.
  */
@@ -74,7 +74,7 @@ export default class FieldDivElements {
    */
   private addClickListener(): void {
     this.div.addEventListener("mousedown", (e: MouseEvent) => {
-      mouseDown = true
+      mouseDown = true;
       if (e.button === 0) {
         if (!(e.ctrlKey || e.metaKey)) {
           for (const object of fieldInfo.clickedField) {
@@ -83,55 +83,93 @@ export default class FieldDivElements {
           }
           fieldInfo.clickedField.length = 0;
           fieldInfo.clickedField.push(this);
-        } else if ((e.ctrlKey || e.metaKey)) {
+        } else if (e.ctrlKey || e.metaKey) {
           extendStart = this;
         }
       }
     });
+    this.div.addEventListener("mousemove", (e: MouseEvent) => {
+      // console.log(this);
+      console.log(fieldInfo.paste);
 
+      if (fieldInfo.paste) {
+        fieldInfo.tempField.length = 0;
+        const toClear = generator.fieldDivs.filter((el) => el.clicked);
+        for (const object of toClear) {
+          // object.div.style.backgroundImage = "";
+          object.div.classList.remove("marked");
+          object.clicked = true;
+        }
+
+        const startField = this;
+        const startCord = { x: startField.x, y: startField.y };
+        for (const object of fieldInfo.copied) {
+          const newX = startCord.x + (object.x - fieldInfo.copied[0].x);
+          const newY = startCord.y + (object.y - fieldInfo.copied[0].y);
+          const NewField = generator.fieldDivs.find((el) => el.x === newX && el.y === newY);
+
+          if (NewField) {
+            fieldInfo.tempField.push(NewField);
+            NewField.div.style.backgroundImage = object.backgroundImage;
+            NewField.div.classList.add("temp-marked");
+            NewField.div.style.backgroundPositionX = object.backgroundPositionX;
+            NewField.div.style.backgroundPositionY = object.backgroundPositionY;
+          }
+        }
+      }
+    });
     this.div.addEventListener(
       "mouseup",
       (e: MouseEvent) => {
-        mouseDown = false
-        console.log(extendStart);
+        mouseDown = false;
+        // console.log(extendStart);
 
         if (e.button === 0) {
           if (!(e.ctrlKey || e.metaKey)) {
             fieldInfo.clickedField.push(this);
             this.markField();
-
-          } else if ((e.ctrlKey || e.metaKey)) {
+            if (extendStart) {
+              for (const object of generator.fieldDivs) {
+                object.clicked = false;
+                object.div.classList.remove("marked");
+                extendStart = null;
+              }
+            }
+          } else if (e.ctrlKey || e.metaKey) {
             if (extendStart) {
               console.log(this);
+              console.log(fieldInfo.clickedField.find((el) => el.clicked !== false));
               if (!extendStart.clicked || !this.clicked) {
-
-
                 console.log("Poszerz wewnątrz");
                 console.log(extendStart);
-                console.log(this);
+                // console.log(this);
 
                 const arr = this.findArray(extendStart, this);
                 for (const object of arr) {
-                  extendStart = null;
                   object.div.classList.add("marked");
                   object.clicked = true;
                   fieldInfo.clickedField.push(object);
                 }
-
-
+                extendStart = null;
               } else if ((e.ctrlKey || e.metaKey) && this.clicked) {
-                fieldInfo.clickedField = fieldInfo.clickedField.filter((element) => {
-                  return element.x !== this.x || element.y !== this.y;
-                });
-                this.div.classList.remove("marked");
-                this.clicked = false;
+                if (extendStart.x == this.x && extendStart.y == this.y) {
+                  console.log("usuwanie");
 
-              } else if ((e.ctrlKey || e.metaKey) && this.clicked) {
-                fieldInfo.clickedField = fieldInfo.clickedField.filter((element) => {
-                  return element.x !== this.x || element.y !== this.y;
-                });
-                this.div.classList.remove("marked");
-                this.clicked = false;
+                  fieldInfo.clickedField = fieldInfo.clickedField.filter((element) => {
+                    return element.x !== this.x || element.y !== this.y;
+                  });
+                  this.div.classList.remove("marked");
+                  this.clicked = false;
+                }
+
+                // } else if ((e.ctrlKey || e.metaKey) && this.clicked && !extendStart) {
+                //   fieldInfo.clickedField = fieldInfo.clickedField.filter((element) => {
+                //     return element.x !== this.x || element.y !== this.y;
+                //   });
+                //   console.log("Usuwanie");
+
+                //   this.div.classList.remove("marked");
+                //   this.clicked = false;
               }
             }
           }
@@ -144,35 +182,10 @@ export default class FieldDivElements {
       "mouseover",
       (e: MouseEvent): void => {
         // console.log(e);
-        if (fieldInfo.paste) {
-          fieldInfo.tempField.length = 0;
-          const toClear = generator.fieldDivs.filter((el) => el.clicked);
-          for (const object of toClear) {
-            object.div.style.backgroundImage = "";
-            object.div.classList.remove("marked");
-            object.clicked = true;
-          }
-          if (fieldInfo.clickedField.length == 2) {
-            const startField = this;
-            const startCord = { x: startField.x, y: startField.y };
-            for (const object of fieldInfo.copied) {
-              const newX = startCord.x + (object.x - fieldInfo.copied[0].x);
-              const newY = startCord.y + (object.y - fieldInfo.copied[0].y);
-              const NewField = generator.fieldDivs.find((el) => el.x === newX && el.y === newY);
-
-              if (NewField) {
-                fieldInfo.tempField.push(NewField);
-                NewField.div.style.backgroundImage = object.backgroundImage;
-                NewField.div.classList.add("temp-marked");
-                NewField.div.style.backgroundPositionX = object.backgroundPositionX;
-                NewField.div.style.backgroundPositionY = object.backgroundPositionY;
-              }
-            }
-          }
-        } else if (mouseDown && !e.ctrlKey) {
+        if (mouseDown) {
           if (extendStart) {
             const elementsInBounds = this.findArray(extendStart, this);
-            console.log(elementsInBounds);
+            // console.log(elementsInBounds);
 
             // fieldInfo.clickedField = elementsInBounds;
             for (const object of elementsInBounds) {
@@ -181,7 +194,7 @@ export default class FieldDivElements {
             }
           } else {
             const elementsInBounds = this.findArray(fieldInfo.clickedField[0], this);
-            console.log(elementsInBounds);
+            // console.log(elementsInBounds);
 
             // fieldInfo.clickedField = elementsInBounds;
             for (const object of elementsInBounds) {
@@ -189,7 +202,6 @@ export default class FieldDivElements {
               // object.clicked = true;
             }
           }
-
         }
       },
       true
@@ -213,13 +225,13 @@ export default class FieldDivElements {
         for (const object of fieldInfo.tempField) {
           object.div.classList.remove("temp-marked");
           object.clicked = false;
-          if (object.backgroundPositionY == "") {
-            object.div.style.backgroundImage = "";
-          } else {
-            object.div.style.backgroundPositionX = object.backgroundPositionX;
-            object.div.style.backgroundPositionY = object.backgroundPositionY;
-            object.div.style.backgroundImage = object.backgroundImage;
-          }
+          // if (object.backgroundImage == "") {
+          //   object.div.style.backgroundImage = "";
+          // } else {
+          object.div.style.backgroundPositionX = object.backgroundPositionX;
+          object.div.style.backgroundPositionY = object.backgroundPositionY;
+          object.div.style.backgroundImage = object.backgroundImage;
+          // }
         }
       }
     });
@@ -270,7 +282,6 @@ export default class FieldDivElements {
           fieldInfo.clickedField[0].clicked = true;
         }
       }
-
     }
   }
 }

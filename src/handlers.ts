@@ -70,7 +70,6 @@ const handlerManager: HandlerMan = {
 
   handleCopy(): void {
     fieldInfo.copied.length = 0;
-    fieldInfo.tempField.length = 0;
     for (const object of fieldInfo.clickedField) {
       const copiedData: CopyField = {
         x: object.x,
@@ -81,6 +80,8 @@ const handlerManager: HandlerMan = {
       };
       fieldInfo.copied.push(copiedData);
     }
+
+    fieldInfo.tempField.length = 0;
   },
 
   handleCut(): void {
@@ -222,7 +223,7 @@ const handlerManager: HandlerMan = {
         handlerManager.restoreState(fieldInfo.history[handlerManager.statePosiotion]);
       }
     };
-    fieldInfo.clickedField.length = 0
+    fieldInfo.clickedField.length = 0;
     reader.onerror = function (error) {
       console.error("Błąd podczas wczytywania pliku:", error);
     };

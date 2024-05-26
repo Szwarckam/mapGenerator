@@ -10,10 +10,6 @@ import divSize from "./size";
  *  Najdalszy div do automatu
  */
 let farthestElement: FieldDivElements = fieldInfo.clickedField[0];
-/**
- *  Informacja o nowej lini dla automatu
- */
-let newLine: boolean = false;
 
 export default class ItemDivElements {
   /**
@@ -108,7 +104,7 @@ export default class ItemDivElements {
     } else {
       // console.log("Inny obrazek");
       this.updateClickedFields();
-      handlerManager.isFirst = false
+      handlerManager.isFirst = false;
     }
   }
   /**
@@ -134,7 +130,7 @@ export default class ItemDivElements {
    */
   private static checkNewLine(): void {
     if (farthestElement.x == divSize.fieldDivWidth - 1) {
-      newLine = true;
+      fieldInfo.newLine = true;
     }
   }
   /**
@@ -171,7 +167,7 @@ export default class ItemDivElements {
    *  Wyszukuje następny najdalszegy obiekt względem początku planszy (Punkt: 0,0)
    */
   private static updateNewLine(): void {
-    if (newLine) {
+    if (fieldInfo.newLine) {
       farthestElement = <FieldDivElements>generator.fieldDivs.find((element): boolean => {
         return (
           element.x == farthestElement.x % divSize.fieldDivWidth &&
@@ -179,10 +175,10 @@ export default class ItemDivElements {
         );
       });
       // console.log("Nowa linia", farthestElement);
-      newLine = !newLine;
+      fieldInfo.newLine = !fieldInfo.newLine;
     }
     if (farthestElement.x == divSize.fieldDivWidth - 1) {
-      newLine = true;
+      fieldInfo.newLine = true;
     }
   }
   /**

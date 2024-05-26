@@ -2,11 +2,7 @@ import { Position } from "./interfaces";
 import generator from "./genrate";
 import fieldInfo from "./divInfo";
 import handlerManager from "./handlers";
-/**
- *  Przetrzymuje informacje o początkowym polu rozszerzenia.
- */
-let extendStart: FieldDivElements | null = null;
-let mouseDown: boolean = false;
+
 /**
  *  Tworzy klasę obiektu dla pola rozstawaiania.
  */
@@ -74,7 +70,7 @@ export default class FieldDivElements {
    */
   private addClickListener(): void {
     this.div.addEventListener("mousedown", (e: MouseEvent) => {
-      mouseDown = true;
+      fieldInfo.mouseDown = true;
       if (e.button === 0) {
         if (!(e.ctrlKey || e.metaKey)) {
           for (const object of fieldInfo.clickedField) {
@@ -84,7 +80,7 @@ export default class FieldDivElements {
           fieldInfo.clickedField.length = 0;
           fieldInfo.clickedField.push(this);
         } else if (e.ctrlKey || e.metaKey) {
-          extendStart = this;
+          fieldInfo.extendStart = this;
         }
       }
     });
@@ -121,38 +117,40 @@ export default class FieldDivElements {
     this.div.addEventListener(
       "mouseup",
       (e: MouseEvent) => {
-        mouseDown = false;
-        // console.log(extendStart);
+        fieldInfo.mouseDown = false;
+        // console.log(fieldInfo.extendStart);
 
         if (e.button === 0) {
           if (!(e.ctrlKey || e.metaKey)) {
             fieldInfo.clickedField.push(this);
             this.markField();
-            if (extendStart) {
+            if (fieldInfo.extendStart) {
               for (const object of generator.fieldDivs) {
                 object.clicked = false;
                 object.div.classList.remove("marked");
-                extendStart = null;
+                fieldInfo.extendStart = null;
               }
             }
           } else if (e.ctrlKey || e.metaKey) {
-            if (extendStart) {
+            if (fieldInfo.extendStart) {
               console.log(this);
               console.log(fieldInfo.clickedField.find((el) => el.clicked !== false));
-              if (!extendStart.clicked || !this.clicked) {
+              if (!fieldInfo.extendStart.clicked || !this.clicked) {
                 console.log("Poszerz wewnątrz");
-                console.log(extendStart);
+                console.log(fieldInfo.extendStart);
                 // console.log(this);
 
-                const arr = this.findArray(extendStart, this);
+                const arr = this.findArray(fieldInfo.extendStart, this);
                 for (const object of arr) {
                   object.div.classList.add("marked");
                   object.clicked = true;
-                  fieldInfo.clickedField.push(object);
+                  if (!fieldInfo.clickedField.find((el) => el.x == object.x && el.y == object.y)) {
+                    fieldInfo.clickedField.push(object);
+                  }
                 }
-                extendStart = null;
+                fieldInfo.extendStart = null;
               } else if ((e.ctrlKey || e.metaKey) && this.clicked) {
-                if (extendStart.x == this.x && extendStart.y == this.y) {
+                if (fieldInfo.extendStart.x == this.x && fieldInfo.extendStart.y == this.y) {
                   console.log("usuwanie");
 
                   fieldInfo.clickedField = fieldInfo.clickedField.filter((element) => {
@@ -162,7 +160,7 @@ export default class FieldDivElements {
                   this.clicked = false;
                 }
 
-                // } else if ((e.ctrlKey || e.metaKey) && this.clicked && !extendStart) {
+                // } else if ((e.ctrlKey || e.metaKey) && this.clicked && !fieldInfo.extendStart) {
                 //   fieldInfo.clickedField = fieldInfo.clickedField.filter((element) => {
                 //     return element.x !== this.x || element.y !== this.y;
                 //   });
@@ -182,9 +180,9 @@ export default class FieldDivElements {
       "mouseover",
       (e: MouseEvent): void => {
         // console.log(e);
-        if (mouseDown) {
-          if (extendStart) {
-            const elementsInBounds = this.findArray(extendStart, this);
+        if (fieldInfo.mouseDown) {
+          if (fieldInfo.extendStart) {
+            const elementsInBounds = this.findArray(fieldInfo.extendStart, this);
             // console.log(elementsInBounds);
 
             // fieldInfo.clickedField = elementsInBounds;
@@ -210,7 +208,7 @@ export default class FieldDivElements {
     this.div.addEventListener("mouseout", () => {
       // console.log(e);
       // const toClear = generator.fieldDivs.filter((el) => el == true);
-      if (mouseDown) {
+      if (fieldInfo.mouseDown) {
         for (const object of generator.fieldDivs) {
           // object.div.style.backgroundImage = "";
           if (!object.clicked) {

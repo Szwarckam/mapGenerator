@@ -70,6 +70,9 @@ const handlerManager: HandlerMan = {
 
   handleCopy(): void {
     fieldInfo.copied.length = 0;
+    // console.log(fieldInfo);
+    fieldInfo.tempField.length = 0;
+
     for (const object of fieldInfo.clickedField) {
       const copiedData: CopyField = {
         x: object.x,
@@ -78,10 +81,10 @@ const handlerManager: HandlerMan = {
         backgroundPositionY: object.backgroundPositionY,
         backgroundImage: object.backgroundImage,
       };
+      object.div.classList.remove("marked");
+      object.clicked = false;
       fieldInfo.copied.push(copiedData);
     }
-
-    fieldInfo.tempField.length = 0;
   },
 
   handleCut(): void {
@@ -103,6 +106,8 @@ const handlerManager: HandlerMan = {
         object.backgroundImage = "";
         object.div.style.backgroundImage = "";
         object.div.style.backgroundPositionX = "";
+        object.div.classList.remove("marked");
+        object.clicked = false;
         const clearDiv: CopyField = {
           x: object.x,
           y: object.y,
@@ -205,6 +210,7 @@ const handlerManager: HandlerMan = {
   },
 
   handleRead(e: Event): void {
+    htmlElements.automat.checked = false;
     const input = e.target as HTMLInputElement;
     const file = input.files![0];
     // console.log(file);

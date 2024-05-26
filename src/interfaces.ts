@@ -25,6 +25,18 @@ export interface HtmlElementContainer {
  */
 export interface FieldInfo {
   /**
+   *  Informacja o nowej lini dla automatu
+   */
+  newLine: boolean;
+  /**
+   *  Przetrzymuje informacje o początkowym polu rozszerzenia.
+   */
+  extendStart: FieldDivElements | null;
+  /**
+   *  Przetrzymuje informacje o tym czy mysz jest kliknięta.
+   */
+  mouseDown: boolean;
+  /**
    *  Przetrzymuje kliknięte obiekty klasy FieldDivElements.
    */
   clickedField: FieldDivElements[];
